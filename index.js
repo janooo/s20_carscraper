@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const request = require("request-promise");
 const cheerio = require("cheerio");
 const CraigslistCar = require("./model/CraiglistCar");
@@ -36,10 +38,15 @@ async function insertCraigslistCarInMongoDb(carArray) {
   await Promise.all(promises);
 }
 
+
 async function main() {
   try {
-    await mongoose.connect(mongoDbUrl, { useNewUrlParser: true });
-    console.log("Connected to mongodb");
+    await mongoose.connect(
+      `mongodb+srv://admin-jan:${process.env.DB_PASS}@cluster0.fqpmf.mongodb.net/carscrape`,
+      { useNewUrlParser: true, useUnifiedTopology: true }
+    )
+    console.log("connected to MongoDB")
+
     const carArray = await scrapeCars();
     await insertCraigslistCarInMongoDb(carArray);
     mongoose.disconnect();
